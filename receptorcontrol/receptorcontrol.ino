@@ -1,6 +1,10 @@
-//Libraries for LoRa
+  //Libraries for LoRa
+
+
+  
 #include <SPI.h>
 #include <LoRa.h>
+#include "String.h"
 
 //Libraries for OLED Display
 #include <Wire.h>
@@ -33,8 +37,17 @@ String LoRaData;
 
 void setup() { 
   //initialize Serial Monitor
-  Serial.begin(9600);
-  
+
+
+    pinMode(16,OUTPUT);
+     pinMode(17,OUTPUT);
+        pinMode(13,OUTPUT);
+           pinMode(2,OUTPUT);
+           
+  Serial.begin(57600);
+
+ 
+    
   //reset OLED display via software
   pinMode(OLED_RST, OUTPUT);
   digitalWrite(OLED_RST, LOW);
@@ -74,6 +87,10 @@ void setup() {
 
 void loop() {
 
+
+
+  
+
   //try to parse packet
   int packetSize = LoRa.parsePacket();
   if (packetSize) {
@@ -83,7 +100,64 @@ void loop() {
     //read packet
     while (LoRa.available()) {
       LoRaData = LoRa.readString();
-      Serial.print(LoRaData);
+      
+int End = LoRaData.indexOf("\n");
+LoRaData[End]='A';
+int StartX = LoRaData.indexOf("X");
+int EndX = LoRaData.indexOf("\n");
+LoRaData[EndX]='A';
+int StartY = LoRaData.indexOf("Y");
+int EndY = LoRaData.indexOf("\n");
+LoRaData[EndY]='A';
+int StartZ = LoRaData.indexOf("Z");
+int EndZ = LoRaData.indexOf("\n");
+LoRaData[EndZ]='A';
+
+String X = LoRaData.substring(StartX+1, EndX);
+String Y = LoRaData.substring(StartY+1, EndY);
+String Z = LoRaData.substring(StartZ+1, EndZ);
+
+float X1 =X.toFloat();
+float Y1 = Y.toFloat();
+float Z1 = Z.toFloat();
+Serial.println(X1);
+
+
+
+  
+
+
+if(X1>8 && Z1<4){
+  Serial.println("adelante");
+  digitalWrite(16,1);
+  }
+  else{digitalWrite(16,0);}
+  
+  if(X1<-8 && Z1<4){
+  Serial.println("atras");
+    digitalWrite(13,1);
+  }
+    else{digitalWrite(13,0);}
+ 
+  if(Y1>8 && Z1<4){
+  Serial.println("izquierda");
+  digitalWrite(17,1);
+  }
+    else{digitalWrite(17,0);}
+    
+  if(Y1<-8 && Z1<4){
+  Serial.println("Derecha");
+  digitalWrite(2,1);
+  }
+    else{digitalWrite(2,0);}
+
+     
+    
+
+      
+
+      
+    //  mySerial.write(LoRaData);
     }
 
     //print RSSI of packet
